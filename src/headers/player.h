@@ -1,6 +1,6 @@
 #pragma once
-#include "headers/position.h";
-#include "headers/ship.h";
+#include "headers/position.h"
+#include "headers/ship.h"
 
 typedef struct player {
     Position positions[100];
