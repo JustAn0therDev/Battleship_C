@@ -1,5 +1,5 @@
 #pragma once
-#include "position.h"
+#include "headers/position.h"
 #include <stdlib.h>
 
 typedef struct ship {

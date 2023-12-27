@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "position.h"
+#include "headers/position.h"
 
 const short GRID_SIZE = 10;
 

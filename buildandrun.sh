@@ -1,4 +1,4 @@
 #!/bin/sh
 
-clang main.c -o battleship
+clang src/main.c -o battleship
 ./battleship
