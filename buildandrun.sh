@@ -1,4 +1,4 @@
 #!/bin/sh
 
-clang src/main.c -o battleship
+clang src/main.c -Werror -Wall -Wunused-variable -o battleship
 ./battleship
