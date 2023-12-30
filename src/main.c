@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "headers/position.h"
+#include "headers/ship.h"
 
 const short GRID_SIZE = 10;
 
@@ -21,7 +22,7 @@ int PositionArrayContains(Position* pos, size_t size, int row, char column)
     return 0;
 }
 
-void DrawBoard(Position* pos)
+void DrawBoard(Position* pos, Ship* ship)
 {
     // NOTES(Ruan): making space for the indicators.
     printf("  ");
@@ -44,27 +45,50 @@ void DrawBoard(Position* pos)
             // \e[1;31m This is red text \e[0m
             // red=31, green=32
 
-            // TODO(Ruan): If a ship is in a position, draw it with a green "x"
-            // A feedback that the position has already been hit and contains a ship.
-            if (PositionArrayContains(pos, GRID_SIZE, ROWS[i], COLUMNS[j])) {
-                printf("\e[1;31mx\e[0m ");
+            if (PositionArrayContains(pos, GRID_SIZE, ROWS[i], COLUMNS[j])) 
+            {
+                if (IsShipInPosition(ship, ROWS[i], COLUMNS[j]))
+                {
+                    printf("\e[1;32mx\e[0m ");
+                }
+                else
+                {
+                    printf("\e[1;31mx\e[0m ");
+                }
+                
                 continue;
             }
 
-            printf("\e[1;32m◯ \e[0m");
+            printf("◯ ");
         }
 
         printf("\n");
     }
+
+    // if (IsShipSinked(ship, pos, GRID_SIZE * GRID_SIZE))
+    // {
+    //     printf("%s has sinked!\n", ship->name);
+    // }
 }
 
 int main(void) 
 {
     Position pos[100];
 
-    pos[0] = (Position){ 0, 'A', 0 }; // Row, column, shot
-    pos[1] = (Position){ 4, 'F', 1 }; // Row, column, shot
+    Position ship_positions[2];
 
-    DrawBoard(pos);
+    *ship_positions = (Position){ 0, 'A' };
+    *(ship_positions + 1) = (Position){ 0, 'B' };
+
+    Ship *ship = CreateShip("Destroyer\0", ship_positions, 2);
+
+    pos[0] = (Position){ 0, 'A' }; // Row, column
+    pos[1] = (Position){ 0, 'B' }; // Row, column
+    pos[2] = (Position){ 5, 'F' }; // Row, column
+
+    DrawBoard(pos, ship);
+    
+    FreeShip(ship);
+    
     return 0;
 }

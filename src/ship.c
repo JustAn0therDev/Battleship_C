@@ -1,6 +1,7 @@
-#include "ship.h"
-#include "position.h"
+#include "headers/ship.h"
+#include "headers/position.h"
 #include <string.h>
+#include <stdio.h>
 
 int IsShipSinked(const Ship* ship, const Position* player_positions, const size_t player_positions_size)
 {
@@ -48,16 +49,9 @@ Ship *CreateShip(char *name, Position *positions, size_t size)
         exit(1);
     }
 
-    ship->name = malloc(strlen(name)) + 1;
-
-    if (ship->name == 0)
-    {
-        puts("Unable to allocate memory for ship name.");
-        exit(1);
-    }
-
+    ship->name = malloc(sizeof(char) * strlen(name));
     strcpy(ship->name, name);
-    
+
     ship->positions = malloc(sizeof(Position) * size);
 
     if (ship->positions == 0)
@@ -77,7 +71,7 @@ void FreeShip(Ship *ship)
 {
     if (ship != 0)
     {
-        if (ship->name != 0) 
+        if (ship->name != 0)
         {
             free(ship->name);
         }

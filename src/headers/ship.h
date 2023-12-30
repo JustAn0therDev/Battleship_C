@@ -1,6 +1,6 @@
 #pragma once
 
-#include "headers/position.h"
+#include "position.h"
 #include <stdlib.h>
 
 typedef struct ship {
