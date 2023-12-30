@@ -5,9 +5,26 @@
 #include "headers/ship.h"
 
 const short GRID_SIZE = 10;
-
+const short MAX_INPUT_SIZE = 4;
 const char COLUMNS[GRID_SIZE] = { 'A','B','C','D','E','F','G','H','I','J' };
 const int ROWS[GRID_SIZE] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+// This function reads 4 characters from input using fgets.
+char* ReadStdinBuffer()
+{
+    char* buffer = malloc(sizeof(char) * MAX_INPUT_SIZE);
+    fgets(buffer, MAX_INPUT_SIZE, stdin);
+
+    return buffer;
+}
+
+// This function reads the line breaks from the stdin buffer so that
+// the fgets function used in ReadStdinBuffer does not read any undesired characters.
+void ReadLineBreaksFromStdinBuffer()
+{
+    char c;
+    while ((c = getchar()) != '\n') {}
+}
 
 int PositionArrayContains(Position* pos, size_t size, int row, char column)
 {
@@ -65,10 +82,10 @@ void DrawBoard(Position* pos, Ship* ship)
         printf("\n");
     }
 
-    // if (IsShipSinked(ship, pos, GRID_SIZE * GRID_SIZE))
-    // {
-    //     printf("%s has sinked!\n", ship->name);
-    // }
+    if (IsShipSinked(ship, pos, GRID_SIZE * GRID_SIZE))
+    {
+        printf("%s has sinked!\n", ship->name);
+    }
 }
 
 int main(void) 
@@ -80,13 +97,24 @@ int main(void)
     *ship_positions = (Position){ 0, 'A' };
     *(ship_positions + 1) = (Position){ 0, 'B' };
 
-    Ship *ship = CreateShip("Destroyer\0", ship_positions, 2);
+    Ship *ship = CreateShip("Destroyer", ship_positions, 2);
 
-    pos[0] = (Position){ 0, 'A' }; // Row, column
-    pos[1] = (Position){ 0, 'B' }; // Row, column
-    pos[2] = (Position){ 5, 'F' }; // Row, column
+    int pos_idx = 0;
 
-    DrawBoard(pos, ship);
+    while (pos_idx <= 100)
+    {
+        char* buffer = ReadStdinBuffer();
+
+        pos[pos_idx] = (Position){ atoi(&buffer[0]), buffer[2] };
+
+        pos_idx++;
+
+        DrawBoard(pos, ship);
+
+        free(buffer);
+
+        ReadLineBreaksFromStdinBuffer();
+    }
     
     FreeShip(ship);
     
