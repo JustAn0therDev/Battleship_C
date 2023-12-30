@@ -4,10 +4,12 @@
 #include "headers/position.h"
 #include "headers/ship.h"
 
-const short GRID_SIZE = 10;
+const short GRID_SIZE = 100;
+const short ROW_SIZE = 10;
+const short COLUMN_SIZE = 10;
 const short MAX_INPUT_SIZE = 4;
-const char COLUMNS[GRID_SIZE] = { 'A','B','C','D','E','F','G','H','I','J' };
-const int ROWS[GRID_SIZE] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+const char COLUMNS[COLUMN_SIZE] = { 'A','B','C','D','E','F','G','H','I','J' };
+const int ROWS[ROW_SIZE] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
 // This function reads 4 characters from input using fgets.
 char* ReadStdinBuffer()
@@ -44,18 +46,18 @@ void DrawBoard(Position* pos, Ship* ship)
     // NOTES(Ruan): making space for the indicators.
     printf("  ");
 
-    for (int i = 0; i < GRID_SIZE; i++)
+    for (int i = 0; i < COLUMN_SIZE; i++)
     {
         printf("%c ", COLUMNS[i]);
     }
 
     printf("\n");
 
-    for (int i = 0; i < GRID_SIZE; i++)
+    for (int i = 0; i < ROW_SIZE; i++)
     {
         printf("%i ", ROWS[i]);
 
-        for (int j = 0; j < GRID_SIZE; j++)
+        for (int j = 0; j < COLUMN_SIZE; j++)
         {
             // NOTES(Ruan): to draw characters in another color, just pass in the 
             // color command, insert the characters to draw and go back to the default color.
@@ -82,7 +84,7 @@ void DrawBoard(Position* pos, Ship* ship)
         printf("\n");
     }
 
-    if (IsShipSinked(ship, pos, GRID_SIZE * GRID_SIZE))
+    if (IsShipSinked(ship, pos, GRID_SIZE))
     {
         printf("%s has sinked!\n", ship->name);
     }
@@ -90,7 +92,7 @@ void DrawBoard(Position* pos, Ship* ship)
 
 int main(void) 
 {
-    Position pos[100];
+    Position pos[GRID_SIZE];
 
     Position ship_positions[2];
 
@@ -101,7 +103,7 @@ int main(void)
 
     int pos_idx = 0;
 
-    while (pos_idx <= 100)
+    while (pos_idx <= GRID_SIZE)
     {
         DrawBoard(pos, ship);
 
