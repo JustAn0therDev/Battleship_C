@@ -103,13 +103,13 @@ int main(void)
 
     while (pos_idx <= 100)
     {
+        DrawBoard(pos, ship);
+
         char* buffer = ReadStdinBuffer();
 
         pos[pos_idx] = (Position){ atoi(&buffer[0]), buffer[2] };
 
         pos_idx++;
-
-        DrawBoard(pos, ship);
 
         free(buffer);
 
