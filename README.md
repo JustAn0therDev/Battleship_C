@@ -2,9 +2,9 @@
 
 This is a battleship game made in C.
 
-Battleship is a game that consists of trying to find your enemy's ships, all placed in a square grid, to sink them. Each player stars by placing their ships on the grid to their liking.
+Battleship is a game that consists of trying to find your enemy's ships, all placed in a square grid, to sink them. Each player starts by placing their ships on the grid to their liking.
 
-If they do find all ships and remove them, it's over.
+If a player finds all of the other player's ships and sinks them, it's over.
 
 The ships and their sizes in squares are: Carrier (5), Battleship (4), Cruiser (3), Submarine (3) and Destroyer (2)
 
