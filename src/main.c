@@ -15,7 +15,7 @@ const int ROWS[ROW_SIZE] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 int IsInSeenShips(Ship** seen_ships, Ship* ship);
 
 // This function reads 4 characters from input using fgets. Since this function allocates memory,
-// it should be freed after usage.
+// it's return value should be freed after usage.
 char* ReadStdinBuffer();
 
 // This function reads the line breaks from the stdin buffer so that
@@ -111,9 +111,18 @@ int main(void)
 
         char* chosen_position_buffer = ReadStdinBuffer();
 
-        positions[pos_idx] = (Position){ atoi(&chosen_position_buffer[0]), chosen_position_buffer[2] };
+        Position chosen_position = (Position){ atoi(&chosen_position_buffer[0]), chosen_position_buffer[2] };
 
-        pos_idx++;
+        if (PositionArrayContains(positions, GRID_SIZE, chosen_position.row, chosen_position.column))
+        {
+            printf("This position has already been used! Press enter to continue.\n");
+            getchar();
+        }
+        else
+        {
+            positions[pos_idx] = chosen_position;
+            pos_idx++;
+        }
 
         free(chosen_position_buffer);
 
