@@ -11,37 +11,21 @@ const short MAX_INPUT_SIZE = 4;
 const char COLUMNS[COLUMN_SIZE] = { 'A','B','C','D','E','F','G','H','I','J' };
 const int ROWS[ROW_SIZE] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-// This function reads 4 characters from input using fgets.
-char* ReadStdinBuffer()
-{
-    char* buffer = malloc(sizeof(char) * MAX_INPUT_SIZE);
-    fgets(buffer, MAX_INPUT_SIZE, stdin);
+// This function checks if the ship pointer has already been added to the array of ships.
+int IsInSeenShips(Ship** seen_ships, Ship* ship);
 
-    return buffer;
-}
+// This function reads 4 characters from input using fgets. Since this function allocates memory,
+// it should be freed after usage.
+char* ReadStdinBuffer();
 
 // This function reads the line breaks from the stdin buffer so that
 // the fgets function used in ReadStdinBuffer does not read any undesired characters.
-void ReadLineBreaksFromStdinBuffer()
-{
-    char c;
-    while ((c = getchar()) != '\n') {}
-}
+void ReadLineBreaksFromStdinBuffer();
 
-int PositionArrayContains(Position* pos, size_t size, int row, char column)
-{
-    for (size_t i = 0; i < size; i++)
-    {
-        if (pos[i].row == row && pos[i].column == column)
-        {
-            return 1;
-        }
-    }
+// This function checks the "Positions" array for any same positions as (row, column)
+int PositionArrayContains(Position* positions, size_t size, int row, char column);
 
-    return 0;
-}
-
-void DrawBoard(Position* pos, Ship* ship)
+void DrawBoard(Position* positions, Ship* ship)
 {
     // NOTES(Ruan): making space for the indicators.
     printf("  ");
@@ -64,7 +48,7 @@ void DrawBoard(Position* pos, Ship* ship)
             // \e[1;31m This is red text \e[0m
             // red=31, green=32
 
-            if (PositionArrayContains(pos, GRID_SIZE, ROWS[i], COLUMNS[j])) 
+            if (PositionArrayContains(positions, GRID_SIZE, ROWS[i], COLUMNS[j])) 
             {
                 if (IsShipInPosition(ship, ROWS[i], COLUMNS[j]))
                 {
@@ -83,16 +67,11 @@ void DrawBoard(Position* pos, Ship* ship)
 
         printf("\n");
     }
-
-    if (IsShipSinked(ship, pos, GRID_SIZE))
-    {
-        printf("%s has sinked!\n", ship->name);
-    }
 }
 
 int main(void) 
 {
-    Position pos[GRID_SIZE];
+    Position positions[GRID_SIZE];
 
     Position ship_positions[2];
 
@@ -101,24 +80,91 @@ int main(void)
 
     Ship *ship = CreateShip("Destroyer", ship_positions, 2);
 
+    Ship* seen_ships[5];
+    
+    seen_ships[0] = 0;
+    seen_ships[1] = 0;
+    seen_ships[2] = 0;
+    seen_ships[3] = 0;
+    seen_ships[4] = 0;
+    
+    int seen_ships_idx = 0;
     int pos_idx = 0;
 
+    // TODO(Ruan): this check is temporary. It'll later check for
+    // the amount of ships available on each player's side.
     while (pos_idx <= GRID_SIZE)
     {
-        DrawBoard(pos, ship);
+        system("clear");
 
-        char* buffer = ReadStdinBuffer();
+        DrawBoard(positions, ship);
 
-        pos[pos_idx] = (Position){ atoi(&buffer[0]), buffer[2] };
+        if (IsShipSinked(ship, positions, GRID_SIZE))
+        {
+            if (!IsInSeenShips(seen_ships, ship))
+            {
+                printf("%s has sinked!\n", ship->name);
+                *(seen_ships + seen_ships_idx) = ship;
+                seen_ships_idx++;
+            }
+        }
+
+        char* chosen_position_buffer = ReadStdinBuffer();
+
+        positions[pos_idx] = (Position){ atoi(&chosen_position_buffer[0]), chosen_position_buffer[2] };
 
         pos_idx++;
 
-        free(buffer);
+        free(chosen_position_buffer);
 
         ReadLineBreaksFromStdinBuffer();
     }
     
     FreeShip(ship);
     
+    return 0;
+}
+
+int IsInSeenShips(Ship** seen_ships, Ship* ship)
+{
+    int seen_ships_idx = 0;
+
+    while (*(seen_ships + seen_ships_idx) != 0)
+    {
+        if (*(seen_ships + seen_ships_idx) == ship)
+        {
+            return 1;
+        }
+
+        seen_ships_idx++;
+    }
+
+    return 0;
+}
+
+char* ReadStdinBuffer()
+{
+    char* buffer = malloc(sizeof(char) * MAX_INPUT_SIZE);
+    fgets(buffer, MAX_INPUT_SIZE, stdin);
+
+    return buffer;
+}
+
+void ReadLineBreaksFromStdinBuffer()
+{
+    char c;
+    while ((c = getchar()) != '\n') {}
+}
+
+int PositionArrayContains(Position* positions, size_t size, int row, char column)
+{
+    for (size_t i = 0; i < size; i++)
+    {
+        if (positions[i].row == row && positions[i].column == column)
+        {
+            return 1;
+        }
+    }
+
     return 0;
 }
