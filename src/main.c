@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "headers/position.h"
 #include "headers/ship.h"
+#include "headers/player.h"
 
+const short MAX_SHIPS = 5;
 const short GRID_SIZE = 100;
 const short ROW_SIZE = 10;
 const short COLUMN_SIZE = 10;
@@ -25,7 +28,7 @@ void ReadLineBreaksFromStdinBuffer();
 // This function checks the "Positions" array for any same positions as (row, column)
 int PositionArrayContains(Position* positions, size_t size, int row, char column);
 
-void DrawBoard(Position* positions, Ship* ship)
+void DrawBoard(Position* positions, Ship** ships, size_t ships_size)
 {
     // NOTES(Ruan): making space for the indicators.
     printf("  ");
@@ -47,14 +50,21 @@ void DrawBoard(Position* positions, Ship* ship)
             // color command, insert the characters to draw and go back to the default color.
             // \e[1;31m This is red text \e[0m
             // red=31, green=32
-
             if (PositionArrayContains(positions, GRID_SIZE, ROWS[i], COLUMNS[j])) 
             {
-                if (IsShipInPosition(ship, ROWS[i], COLUMNS[j]))
+                int found_ship_in_position = 0;
+                
+                for (size_t k = 0; k < MAX_SHIPS; k++)
                 {
-                    printf("\e[1;32mx\e[0m ");
+                    if (IsShipInPosition(*(ships + k), ROWS[i], COLUMNS[j]))
+                    {
+                        printf("\e[1;32mx\e[0m ");
+                        found_ship_in_position = 1;
+                        break;
+                    }
                 }
-                else
+
+                if (!found_ship_in_position)
                 {
                     printf("\e[1;31mx\e[0m ");
                 }
@@ -73,14 +83,9 @@ int main(void)
 {
     Position positions[GRID_SIZE];
 
-    Position ship_positions[2];
+    Player* player = CreatePlayer("TestPlayer");
 
-    *ship_positions = (Position){ 0, 'A' };
-    *(ship_positions + 1) = (Position){ 0, 'B' };
-
-    Ship *ship = CreateShip("Destroyer", ship_positions, 2);
-
-    Ship* seen_ships[5];
+    Ship* seen_ships[MAX_SHIPS];
     
     seen_ships[0] = 0;
     seen_ships[1] = 0;
@@ -91,22 +96,28 @@ int main(void)
     int seen_ships_idx = 0;
     int pos_idx = 0;
 
-    // TODO(Ruan): this check is temporary. It'll later check for
-    // the amount of ships available on each player's side.
-    while (pos_idx <= GRID_SIZE)
+    while (1)
     {
         system("clear");
 
-        DrawBoard(positions, ship);
+        DrawBoard(positions, player->ships, MAX_SHIPS);
 
-        if (IsShipSinked(ship, positions, GRID_SIZE))
+        for (size_t i = 0; i < MAX_SHIPS; i++)
         {
-            if (!IsInSeenShips(seen_ships, ship))
+            if (IsShipSinked(player->ships[i], positions, GRID_SIZE) == 1)
             {
-                printf("%s has sinked!\n", ship->name);
-                *(seen_ships + seen_ships_idx) = ship;
-                seen_ships_idx++;
+                if (!IsInSeenShips(seen_ships, player->ships[i]))
+                {
+                    printf("%s has sinked!\n", player->ships[i]->name);
+                    *(seen_ships + seen_ships_idx) = player->ships[i];
+                    seen_ships_idx++;
+                }
             }
+        }
+
+        if (pos_idx == GRID_SIZE || seen_ships_idx == 1)
+        {
+            break;
         }
 
         char* chosen_position_buffer = ReadStdinBuffer();
@@ -128,9 +139,9 @@ int main(void)
 
         ReadLineBreaksFromStdinBuffer();
     }
-    
-    FreeShip(ship);
-    
+
+    FreePlayer(player);
+        
     return 0;
 }
 

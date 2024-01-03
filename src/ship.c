@@ -5,8 +5,11 @@
 
 int IsShipSinked(const Ship* ship, const Position* player_positions, const size_t player_positions_size)
 {
-    if (ship == 0) return 0;
-
+    if (ship == 0) 
+    {
+        return 0;
+    }
+    
     size_t ship_positions = ship->size;
 
     for (size_t i = 0; i < ship->size; i++)

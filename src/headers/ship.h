@@ -8,7 +8,6 @@ typedef struct ship {
     Position* positions;
     size_t size;
     char* name;
-    int defeated;
 } Ship;
 
 // Checks if the ship has sinked. The ship's positions have to be updated with the player's available positions.
