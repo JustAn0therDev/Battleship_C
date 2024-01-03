@@ -28,56 +28,9 @@ void ReadLineBreaksFromStdinBuffer();
 // This function checks the "Positions" array for any same positions as (row, column)
 int PositionArrayContains(Position* positions, size_t size, int row, char column);
 
-void DrawBoard(Position* positions, Ship** ships, size_t ships_size)
-{
-    // NOTES(Ruan): making space for the indicators.
-    printf("  ");
-
-    for (int i = 0; i < COLUMN_SIZE; i++)
-    {
-        printf("%c ", COLUMNS[i]);
-    }
-
-    printf("\n");
-
-    for (int i = 0; i < ROW_SIZE; i++)
-    {
-        printf("%i ", ROWS[i]);
-
-        for (int j = 0; j < COLUMN_SIZE; j++)
-        {
-            // NOTES(Ruan): to draw characters in another color, just pass in the 
-            // color command, insert the characters to draw and go back to the default color.
-            // \e[1;31m This is red text \e[0m
-            // red=31, green=32
-            if (PositionArrayContains(positions, GRID_SIZE, ROWS[i], COLUMNS[j])) 
-            {
-                int found_ship_in_position = 0;
-                
-                for (size_t k = 0; k < MAX_SHIPS; k++)
-                {
-                    if (IsShipInPosition(*(ships + k), ROWS[i], COLUMNS[j]))
-                    {
-                        printf("\e[1;32mx\e[0m ");
-                        found_ship_in_position = 1;
-                        break;
-                    }
-                }
-
-                if (!found_ship_in_position)
-                {
-                    printf("\e[1;31mx\e[0m ");
-                }
-                
-                continue;
-            }
-
-            printf("◯ ");
-        }
-
-        printf("\n");
-    }
-}
+// This function draws the board to stdout with the used positions and
+// hit ships.
+void DrawBoard(Position* positions, Ship** ships, size_t ships_size);
 
 int main(void) 
 {
@@ -115,6 +68,8 @@ int main(void)
             }
         }
 
+        // TODO(Ruan): This should break either if the player has used all positions OR the 
+        // total amount of ships has sinked.
         if (pos_idx == GRID_SIZE || seen_ships_idx == 1)
         {
             break;
@@ -140,8 +95,13 @@ int main(void)
         ReadLineBreaksFromStdinBuffer();
     }
 
+    if (seen_ships_idx == 1)
+    {
+        puts("Congrats! You've found all ships and won!");
+    }
+
     FreePlayer(player);
-        
+
     return 0;
 }
 
@@ -187,4 +147,55 @@ int PositionArrayContains(Position* positions, size_t size, int row, char column
     }
 
     return 0;
+}
+
+void DrawBoard(Position* positions, Ship** ships, size_t ships_size)
+{
+    // NOTES(Ruan): making space for the indicators.
+    printf("  ");
+
+    for (int i = 0; i < COLUMN_SIZE; i++)
+    {
+        printf("%c ", COLUMNS[i]);
+    }
+
+    printf("\n");
+
+    for (int i = 0; i < ROW_SIZE; i++)
+    {
+        printf("%i ", ROWS[i]);
+
+        for (int j = 0; j < COLUMN_SIZE; j++)
+        {
+            // NOTES(Ruan): to draw characters in another color, just pass in the 
+            // color command, insert the characters to draw and go back to the default color.
+            // e.g. \e[1;31m This is red text \e[0m
+            // red=31, green=32
+            if (PositionArrayContains(positions, GRID_SIZE, ROWS[i], COLUMNS[j])) 
+            {
+                int found_ship_in_position = 0;
+                
+                for (size_t k = 0; k < MAX_SHIPS; k++)
+                {
+                    if (IsShipInPosition(*(ships + k), ROWS[i], COLUMNS[j]))
+                    {
+                        printf("\e[1;32mx\e[0m ");
+                        found_ship_in_position = 1;
+                        break;
+                    }
+                }
+
+                if (!found_ship_in_position)
+                {
+                    printf("\e[1;31mx\e[0m ");
+                }
+                
+                continue;
+            }
+
+            printf("◯ ");
+        }
+
+        printf("\n");
+    }
 }
