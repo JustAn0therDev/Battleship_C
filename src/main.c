@@ -49,6 +49,8 @@ int main(void)
     int seen_ships_idx = 0;
     int pos_idx = 0;
 
+    int final_seen_ships_idx = (player->ships_size - 1);
+
     while (1)
     {
         system("clear");
@@ -68,9 +70,7 @@ int main(void)
             }
         }
 
-        // TODO(Ruan): This should break either if the player has used all positions OR the 
-        // total amount of ships has sinked.
-        if (pos_idx == GRID_SIZE || seen_ships_idx == 1)
+        if (pos_idx == GRID_SIZE || seen_ships_idx > final_seen_ships_idx)
         {
             break;
         }

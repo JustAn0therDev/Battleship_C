@@ -6,7 +6,8 @@
 typedef struct player {
     Position positions[100];
     char* name;
-    Ship* ships[5];
+    size_t ships_size;
+    Ship* ships[];
 } Player;
 
 // This function creates a player object.
