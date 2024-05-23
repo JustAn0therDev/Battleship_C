@@ -6,6 +6,9 @@
 #include "headers/ship.h"
 #include "headers/position.h"
 
+extern const int COLUMNS[COLUMN_SIZE];
+extern const int ROWS[ROW_SIZE];
+
 Player* CreatePlayer(char* name)
 {
     Player* player = malloc(sizeof(Player));
